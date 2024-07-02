@@ -69,6 +69,12 @@ namespace SdlCompatible.TextToImg
 
     }
 
+    public enum CharType { 
+        WHITESPACE,
+        NONE_ASCII,
+        ASCII
+    }
+
     public class RenderItemText : RenderBaseItem {
         private bool isSingle = false;
         public GroupTexture groupTexture;
@@ -162,34 +168,32 @@ namespace SdlCompatible.TextToImg
 
                         BackBrush.Color = sText.BackColor == Color.Black ? Color.Orange : sText.BackColor;
 
-                        if (sText.Txt.Equals(" "))
-                        {
-
-                        }
-                        else { 
-                            gPath.AddString(sText.Txt, sText.TextFont.FontFamily, (int)sText.TextFont.Style,
+                        gPath.AddString(sText.Txt, sText.TextFont.FontFamily, (int)sText.TextFont.Style,
                                 sText.TextFont.Size * ratio,
                                 new PointF(xPos, yPos + baseLine - AscentPixels),
                                 StringFormat.GenericTypographic
                                 );
-                            //g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
-                            //g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
+                        //g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
+                        //g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
 
-                            var gpw = gPath.GetBounds(null, p);
-                            bool IsUni = ContainsUnicodeCharacter(sText.Txt);
-                            var tWidth = IsUni ? sText.TextFont.Size * ratio : gpw.Width;
+                        var gpw = gPath.GetBounds(null, p);
+                        CharType ct = sText.Txt.Equals(" ") ? CharType.WHITESPACE : ContainsUnicodeCharacter(sText.Txt) ? CharType.NONE_ASCII : CharType.ASCII;
+                        bool IsUni = sText.Txt.Equals(" ") ? true : ContainsUnicodeCharacter(sText.Txt);
+                        //var tWidth = IsUni ? sText.TextFont.Size * ratio : gpw.Width;
+                        var tWidth = sText.TextFont.Size * ratio;
+                        if (ct == CharType.WHITESPACE) tWidth /= 2;
+                        if (ct == CharType.ASCII) tWidth = gpw.Width;
 
-                            g.FillRectangle(BackBrush, new RectangleF(xPos,yPos, tWidth, groupTexture.LineTextures[i].LineHeight));
-                            g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
-                            g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
+                        g.FillRectangle(BackBrush, new RectangleF(xPos, yPos, tWidth, groupTexture.LineTextures[i].LineHeight));
+                        g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
+                        g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
 
 
-                            g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
+                        g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
 
-                            xPos += tWidth;
+                        xPos += tWidth;
 
-                            g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
-                        }
+                        g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
                     }
                     g.DrawLine(new Pen(new SolidBrush(Color.Red)),new PointF(0,yPos+baseLine),new PointF(xPos, yPos + baseLine));
                     yPos += groupTexture.LineTextures[i].LineHeight;
