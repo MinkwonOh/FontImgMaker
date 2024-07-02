@@ -163,20 +163,35 @@ namespace SdlCompatible.TextToImg
                         
                         gPath.AddString(sText.Txt, sText.TextFont.FontFamily, (int)sText.TextFont.Style,
                             sText.TextFont.Size * ratio,
-                            new PointF(xPos, yPos + baseLine - AscentPixels),
+                            new RectangleF(xPos, yPos + baseLine - AscentPixels, sText.TextFont.Size * ratio, groupTexture.LineTextures[i].LineHeight),
                             StringFormat.GenericTypographic
                             );
+
+                        var gpw = gPath.GetBounds(null, p);
 
                         BackBrush.Color = sText.BackColor == Color.Black ? Color.Orange : sText.BackColor;
                         g.FillRectangle(BackBrush, new RectangleF(xPos,yPos,sText.TextFont.Size * ratio,groupTexture.LineTextures[i].LineHeight));
                         g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
                         g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
+                        
+                        //tmp
+                        g.DrawLine(new Pen(new SolidBrush(Color.Blue),1), new PointF(xPos,yPos),new PointF(xPos,groupTexture.LineTextures[i].LineHeight));
 
-                        var gpw = gPath.GetBounds(null, p);
-                        xPos += gpw.Width;
+                        if (ContainsUnicodeCharacter(sText.Txt))
+                        {
+                            xPos += sText.WidthFromFont / ratio;
+                        }
+                        else {
+                            xPos += gpw.Width;
+                        }
 
-                        g.DrawLine(new Pen(new SolidBrush(Color.Blue),1),new PointF(xPos - gpw.Width ,yPos), new PointF(xPos - gpw.Width, yPos + groupTexture.LineTextures[i].LineHeight));
-                        g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
+                        if (sText.Txt == "2") {
+                            Console.WriteLine();
+                        }
+
+                        //tmp
+                        g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, groupTexture.LineTextures[i].LineHeight));
+
                     }
                     g.DrawLine(new Pen(new SolidBrush(Color.Red)),new PointF(0,yPos+baseLine),new PointF(xPos, yPos + baseLine));
                     yPos += groupTexture.LineTextures[i].LineHeight;

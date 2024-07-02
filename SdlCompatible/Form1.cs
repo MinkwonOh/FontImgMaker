@@ -276,7 +276,8 @@ namespace SdlCompatible
                     singleT.ForeColor = rtb.SelectionColor;
                     singleT.Txt = rtb.SelectedText;
                     Graphics g = Graphics.FromImage(new Bitmap(1,1));
-                    var sSize = g.MeasureString(rtb.SelectedText,rtb.SelectionFont);
+                    g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                    var sSize = g.MeasureString(rtb.SelectedText,rtb.SelectionFont,new Point(0,0),new StringFormat(StringFormatFlags.MeasureTrailingSpaces));
                     singleT.WidthFromFont = sSize.Width;
                     if (tmpH < sSize.Height)
                         tmpH = sSize.Height;
@@ -467,7 +468,7 @@ namespace SdlCompatible
             rtb.WordWrap = false;
             rtb.SelectionAlignment = horAlign;
             rtb.BackColor = Color.Black;
-            rtb.Text = "ijqlm 맑장";
+            rtb.Text = "ajqㅡㅁㅣ맑123";
             if(cbxFont.Items.Count > 0)
                 rtb.Font = new Font(fontFamilies[cbxFont.SelectedIndex], (int)nmrcFontEmsize.Value, FontStyle.Regular);
             rtb.SelectAll();
