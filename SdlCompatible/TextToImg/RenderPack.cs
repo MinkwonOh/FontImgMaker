@@ -160,38 +160,36 @@ namespace SdlCompatible.TextToImg
                         Debug.WriteLine($"CellHeig : {CellHeightPixels}");
                         Debug.WriteLine($"=======================================================");
 
-                        
-                        gPath.AddString(sText.Txt, sText.TextFont.FontFamily, (int)sText.TextFont.Style,
-                            sText.TextFont.Size * ratio,
-                            new RectangleF(xPos, yPos + baseLine - AscentPixels, sText.TextFont.Size * ratio, groupTexture.LineTextures[i].LineHeight),
-                            StringFormat.GenericTypographic
-                            );
-
-                        var gpw = gPath.GetBounds(null, p);
-
                         BackBrush.Color = sText.BackColor == Color.Black ? Color.Orange : sText.BackColor;
-                        g.FillRectangle(BackBrush, new RectangleF(xPos,yPos,sText.TextFont.Size * ratio,groupTexture.LineTextures[i].LineHeight));
-                        g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
-                        g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
-                        
-                        //tmp
-                        g.DrawLine(new Pen(new SolidBrush(Color.Blue),1), new PointF(xPos,yPos),new PointF(xPos,groupTexture.LineTextures[i].LineHeight));
 
-                        if (ContainsUnicodeCharacter(sText.Txt))
+                        if (sText.Txt.Equals(" "))
                         {
-                            xPos += sText.WidthFromFont / ratio;
-                        }
-                        else {
-                            xPos += gpw.Width;
-                        }
 
-                        if (sText.Txt == "2") {
-                            Console.WriteLine();
                         }
+                        else { 
+                            gPath.AddString(sText.Txt, sText.TextFont.FontFamily, (int)sText.TextFont.Style,
+                                sText.TextFont.Size * ratio,
+                                new PointF(xPos, yPos + baseLine - AscentPixels),
+                                StringFormat.GenericTypographic
+                                );
+                            //g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
+                            //g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
 
-                        //tmp
-                        g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, groupTexture.LineTextures[i].LineHeight));
+                            var gpw = gPath.GetBounds(null, p);
+                            bool IsUni = ContainsUnicodeCharacter(sText.Txt);
+                            var tWidth = IsUni ? sText.TextFont.Size * ratio : gpw.Width;
 
+                            g.FillRectangle(BackBrush, new RectangleF(xPos,yPos, tWidth, groupTexture.LineTextures[i].LineHeight));
+                            g.FillPath(new SolidBrush(is3d ? FillColor : sText.ForeColor), gPath);
+                            g.DrawPath(new Pen(new SolidBrush(is3d ? BorderColor : sText.ForeColor)), gPath);
+
+
+                            g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
+
+                            xPos += tWidth;
+
+                            g.DrawLine(new Pen(new SolidBrush(Color.Blue), 1), new PointF(xPos, yPos), new PointF(xPos, yPos + groupTexture.LineTextures[i].LineHeight));
+                        }
                     }
                     g.DrawLine(new Pen(new SolidBrush(Color.Red)),new PointF(0,yPos+baseLine),new PointF(xPos, yPos + baseLine));
                     yPos += groupTexture.LineTextures[i].LineHeight;

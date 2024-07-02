@@ -277,8 +277,10 @@ namespace SdlCompatible
                     singleT.Txt = rtb.SelectedText;
                     Graphics g = Graphics.FromImage(new Bitmap(1,1));
                     g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                    var sSize = g.MeasureString(rtb.SelectedText,rtb.SelectionFont,new Point(0,0),new StringFormat(StringFormatFlags.MeasureTrailingSpaces));
-                    singleT.WidthFromFont = sSize.Width;
+                    var sSize = g.MeasureString(rtb.SelectedText,rtb.SelectionFont,new Point(0,0),new StringFormat());
+                    var trTxt = TextRenderer.MeasureText(rtb.SelectedText,rtb.SelectionFont);
+                    singleT.WidthFromFont = trTxt.Width;
+                    Console.WriteLine($"{sSize.Width},{trTxt.Width}");
                     if (tmpH < sSize.Height)
                         tmpH = sSize.Height;
 
